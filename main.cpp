@@ -2,7 +2,7 @@
 #include <string>
 #include <fstream>
 
-#define PRIME_SIZE 127
+#define TABLE_SIZE 847
 
 using namespace std;
 
@@ -25,24 +25,20 @@ public:
 
 class HashTable {
 private:
-    LinkedList *table[PRIME_SIZE];
-    int size;
+    LinkedList* table[TABLE_SIZE];
     static int _hash(string str) {
         int asciiSum = 0;
         for(int i = 0; i < str.length(); i++) {
             asciiSum += str[i];
         }
-        return asciiSum % PRIME_SIZE;
+        return asciiSum % TABLE_SIZE;
     }
 
 public:
     HashTable() {
-        for(int i = 0; i < PRIME_SIZE; i++) {
+        for(int i = 0; i < TABLE_SIZE; i++) {
             table[i] = nullptr;
         }
-    }
-    HashTable(int size) {
-        this->size = size;
     }
 
     void push(string word, string data) {
@@ -60,7 +56,10 @@ public:
         place->next = wordMeaning;
     }
 
-    void find(string word) {      //TODO Compare string in lower case
+    void find(string word) {
+        for(int i = 0; i < word.length(); i++) {
+            word[i] = static_cast<char>(toupper(word[i]));
+        }
         int hashNumber = _hash(word);
         LinkedList* result = table[hashNumber];
         if(!result) {
@@ -69,15 +68,13 @@ public:
         }
         while(result->word != word) {
             if(!result->next) {
-                cout << "Element does not found" << endl;
-                break;
+                cout << "Element does not found";
+                return;
             }
             result = result->next;
         }
-        cout << result->data;  //TODO If word does not find return the message
+        cout << result->data;
     }
-
-    //TODO Write delete function
 };
 
 int main() {
@@ -93,8 +90,12 @@ int main() {
     }
     string wordToFind;
     cout << "Type a word to get a definition: ";
-    while(cin >> wordToFind) {    //TODO Need command to exit the program
+    while(cin >> wordToFind) {
         dictionary.find(wordToFind);
-        cout << endl;
+        cout << endl << "Continue? [y] to continue, [n] to exit: ";
+        char answer;
+        cin >> answer;
+        if(answer == 'n') exit(0);
+        cout << "Enter the next word: ";
     }
 }
